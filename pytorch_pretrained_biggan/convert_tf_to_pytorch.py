@@ -31,7 +31,11 @@ def extract_batch_norm_stats(tf_model_path, batch_norm_stats_path=None):
                           "Please see https://www.tensorflow.org/install/ for installation instructions for TensorFlow. "
                           "And see https://github.com/tensorflow/hub for installing Hub. "
                           "Probably pip install tensorflow tensorflow-hub")
-    tf.reset_default_graph()
+    try:
+        tf.reset_default_graph()  # TF 1
+    except AttributeError:
+        tf.compat.v1.reset_default_graph()  # TF 2 backward compatibility
+    
     logger.info('Loading BigGAN module from: {}'.format(tf_model_path))
     module = hub.Module(tf_model_path)
     inputs = {k: tf.placeholder(v.dtype, v.get_shape().as_list(), k)
